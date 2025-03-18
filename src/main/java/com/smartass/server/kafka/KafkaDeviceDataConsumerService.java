@@ -69,7 +69,7 @@ public class KafkaDeviceDataConsumerService {
             }
 
             alertDetectionService.evaluateAndReact(data)
-                    .ifPresent(alert -> {
+                    .forEach(alert -> {
                         try {
                             String alertJson = objectMapper.writeValueAsString(alert);
                             telemetryWebSocketHandler.broadcastAlert(alertJson);

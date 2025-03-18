@@ -3,17 +3,10 @@ package com.smartass.server.service.processing;
 import com.smartass.server.model.device.DeviceData;
 import com.smartass.server.model.device.LightBulbData;
 import com.smartass.server.model.device.TemperatureSensorData;
-import com.smartass.server.service.alert.AlertReactionService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DeviceProcessingService {
-
-    private final AlertReactionService alertReactionService;
-
-    public DeviceProcessingService(AlertReactionService alertReactionService) {
-        this.alertReactionService = alertReactionService;
-    }
 
     public void handleGeneric(DeviceData data) {
 
