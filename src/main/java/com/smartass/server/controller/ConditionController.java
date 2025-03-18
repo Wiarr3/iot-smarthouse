@@ -22,13 +22,17 @@ public class ConditionController {
     }
 
     @GetMapping("/{deviceName}/{paramName}")
-    public ResponseEntity<AlertCondition> getCondition(@PathVariable int deviceName, @PathVariable String paramName) {
-        return ResponseEntity.ok(conditionRegistry.getCondition(deviceName + "-" + paramName));
+    public ResponseEntity<AlertCondition> getCondition(@PathVariable String deviceName, @PathVariable String paramName) {
+        AlertCondition condition = conditionRegistry.getCondition(deviceName + "-" + paramName);
+        if (condition == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(condition);
     }
 
     @PostMapping
-    public ResponseEntity<Void> createCondition(@RequestBody AlertCondition condition) {
+    public ResponseEntity<AlertCondition> createCondition(@RequestBody AlertCondition condition) {
         conditionRegistry.setCondition(condition);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(condition);
     }
 }
