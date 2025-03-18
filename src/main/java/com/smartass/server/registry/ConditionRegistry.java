@@ -31,9 +31,9 @@ public class ConditionRegistry {
         return conditions.get(parameter);
     }
 
-    public void setCondition(String type, AlertCondition condition) {
+    public void setCondition(AlertCondition condition) {
         if (alertConditionValidator.validate(condition)) {
-            String conditionID = type + "-" + condition.getParameter();
+            String conditionID = condition.getDeviceType() + "-" + condition.getParameter();
             conditions.put(conditionID, condition);
         }
     }
