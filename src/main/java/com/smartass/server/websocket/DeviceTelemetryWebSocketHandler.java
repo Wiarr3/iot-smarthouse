@@ -28,4 +28,16 @@ public class DeviceTelemetryWebSocketHandler implements WebSocketHandler {
                 ))
                 .subscribe();
     }
+
+    public void broadcastTelemetry(String json) {
+        Flux.fromIterable(sessions)
+                .flatMap(session -> session.send(Mono.just(session.textMessage("[telemetry]" + json))))
+                .subscribe();
+    }
+
+    public void broadcastAlert(String json) {
+        Flux.fromIterable(sessions)
+                .flatMap(session -> session.send(Mono.just(session.textMessage("[alert]" + json))))
+                .subscribe();
+    }
 }

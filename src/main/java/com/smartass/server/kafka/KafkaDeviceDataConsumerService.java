@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartass.server.model.device.DeviceData;
 import com.smartass.server.model.ErrorReason;
 import com.smartass.server.security.AuthKeyRegistry;
+import com.smartass.server.service.alert.AlertReactionService;
 import com.smartass.server.service.processing.DeviceProcessingService;
 import com.smartass.server.websocket.DeviceTelemetryWebSocketHandler;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -23,18 +24,21 @@ public class KafkaDeviceDataConsumerService {
     private final MeterRegistry meterRegistry;
     private final DeviceTelemetryWebSocketHandler telemetryWebSocketHandler;
     private final ObjectMapper objectMapper;
+    private final AlertReactionService alertDetectionService;
 
     public KafkaDeviceDataConsumerService(KafkaReceiver<String, DeviceData> kafkaReceiver,
                                           AuthKeyRegistry authKeyRegistry,
                                           DeviceProcessingService processingService,
                                           MeterRegistry meterRegistry,
-                                          DeviceTelemetryWebSocketHandler telemetryWebSocketHandler) {
+                                          DeviceTelemetryWebSocketHandler telemetryWebSocketHandler,
+                                          AlertReactionService alertReactionService) {
         this.kafkaReceiver = kafkaReceiver;
         this.authKeyRegistry = authKeyRegistry;
         this.processingService = processingService;
         this.meterRegistry = meterRegistry;
         this.telemetryWebSocketHandler = telemetryWebSocketHandler;
         this.objectMapper = new ObjectMapper();
+        this.alertDetectionService = alertReactionService;
 
         startReceiving();
     }
@@ -56,14 +60,25 @@ public class KafkaDeviceDataConsumerService {
             }
 
             processingService.handleGeneric(data);
-            meterRegistry.counter("iot.message.success", "type", data.getType()).increment();
 
             try {
                 String json = objectMapper.writeValueAsString(data);
-                telemetryWebSocketHandler.broadcast(json);
+                telemetryWebSocketHandler.broadcastTelemetry(json);
             } catch (Exception ex) {
-                log.warn("[WebSocket] Failed to send message to frontend", ex);
+                log.warn("[WebSocket] Failed to send telemetry to frontend", ex);
             }
+
+            alertDetectionService.evaluateAndReact(data)
+                    .ifPresent(alert -> {
+                        try {
+                            String alertJson = objectMapper.writeValueAsString(alert);
+                            telemetryWebSocketHandler.broadcastAlert(alertJson);
+                        } catch (Exception ex) {
+                            log.warn("[WebSocket] Failed to send alert to frontend", ex);
+                        }
+                    });
+
+            meterRegistry.counter("iot.message.success", "type", data.getType()).increment();
 
         } catch (Exception e) {
             log.error("[Kafka] Exception during message processing", e);
@@ -72,4 +87,5 @@ public class KafkaDeviceDataConsumerService {
             record.receiverOffset().acknowledge();
         }
     }
+
 }
