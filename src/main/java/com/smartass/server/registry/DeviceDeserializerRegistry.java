@@ -2,6 +2,7 @@ package com.smartass.server.registry;
 
 import com.smartass.server.model.device.DeviceData;
 import com.smartass.server.model.device.LightBulbData;
+import com.smartass.server.model.device.SmokeDetectorData;
 import com.smartass.server.model.device.TemperatureSensorData;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ public class DeviceDeserializerRegistry {
     public DeviceDeserializerRegistry() {
         registry.put("temperature", TemperatureSensorData.class);
         registry.put("light", LightBulbData.class);
+        registry.put("smoke", SmokeDetectorData.class);
     }
 
     public Class<? extends DeviceData> resolve(String type) {

@@ -13,6 +13,7 @@ public class AuthKeyRegistry {
         authKeys.put("admin", "admin");
         authKeys.put("sensor-001", "key123");
         authKeys.put("light-001", "key456");
+        authKeys.put("smoke-001", "key835");
     }
 
     public boolean isValid(String deviceId, String authKey) {
