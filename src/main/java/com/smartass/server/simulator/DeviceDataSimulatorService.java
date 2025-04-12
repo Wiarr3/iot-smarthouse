@@ -31,6 +31,8 @@ public class DeviceDataSimulatorService {
     private boolean isEnabled(Simulator simulator) {
         return (simulator instanceof LightBulbSimulator && simulatorProperties.getLightbulb().isEnabled()) ||
                 (simulator instanceof TemperatureSensorSimulator && simulatorProperties.getTemperature().isEnabled()) ||
-                (simulator instanceof SmokeDetectorSimulator && simulatorProperties.getSmoke().isEnabled());
+                (simulator instanceof SmokeDetectorSimulator && simulatorProperties.getSmoke().isEnabled()) ||
+                (simulator instanceof EnergyMeterSimulator && simulatorProperties.getEnergy().isEnabled()) ||
+                (simulator instanceof MotionSensorSimulator && simulatorProperties.getMotion().isEnabled());
     }
 }

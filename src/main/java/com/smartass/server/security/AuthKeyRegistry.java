@@ -14,6 +14,8 @@ public class AuthKeyRegistry {
         authKeys.put("sensor-001", "key123");
         authKeys.put("light-001", "key456");
         authKeys.put("smoke-001", "key835");
+        authKeys.put("energy-001", "key412");
+        authKeys.put("motion-001", "key745");
     }
 
     public boolean isValid(String deviceId, String authKey) {

@@ -1,9 +1,6 @@
 package com.smartass.server.service.processing;
 
-import com.smartass.server.model.device.DeviceData;
-import com.smartass.server.model.device.LightBulbData;
-import com.smartass.server.model.device.SmokeDetectorData;
-import com.smartass.server.model.device.TemperatureSensorData;
+import com.smartass.server.model.device.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +11,8 @@ public class DeviceProcessingService {
             case "temperature" -> handleTemperature((TemperatureSensorData) data);
             case "light" -> handleLight((LightBulbData) data);
             case "smoke" -> handleSmoke((SmokeDetectorData) data);
+            case "energy" -> handleEnergy((EnergyMeterData) data);
+            case "motion" -> handleMotion((MotionSensorData) data);
             default -> System.out.println("Unknown device type");
         }
     }
@@ -27,6 +26,16 @@ public class DeviceProcessingService {
     }
     private void handleSmoke(SmokeDetectorData data) {
         System.out.println("[SMOKE] Alarm: " + (data.getAlarmActive() ? "ON" : "OFF")+", Smoke Level: "+ data.getSmokeLevel() + ", Battery Level: " + data.getBatteryLevel());
+
+    }
+
+    private void handleEnergy(EnergyMeterData data) {
+        System.out.println("[Energy] Current Power: " + data.getCurrentPower()+", Total Energy: "+ data.getTotalEnergy());
+
+    }
+
+    private void handleMotion(MotionSensorData data) {
+        System.out.println("[Motion] Any Motion: " + (data.getMotionDetected() ? "Yes" : "No"));
 
     }
 }

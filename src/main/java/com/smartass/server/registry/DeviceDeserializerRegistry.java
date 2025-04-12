@@ -1,9 +1,6 @@
 package com.smartass.server.registry;
 
-import com.smartass.server.model.device.DeviceData;
-import com.smartass.server.model.device.LightBulbData;
-import com.smartass.server.model.device.SmokeDetectorData;
-import com.smartass.server.model.device.TemperatureSensorData;
+import com.smartass.server.model.device.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -17,6 +14,8 @@ public class DeviceDeserializerRegistry {
         registry.put("temperature", TemperatureSensorData.class);
         registry.put("light", LightBulbData.class);
         registry.put("smoke", SmokeDetectorData.class);
+        registry.put("energy", EnergyMeterData.class);
+        registry.put("motion", MotionSensorData.class);
     }
 
     public Class<? extends DeviceData> resolve(String type) {

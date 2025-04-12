@@ -41,7 +41,6 @@ public class TemperatureSensorSimulator implements Simulator {
                         windowOpen = true;
                         windowOpenTime = 0;
                         heatingUp = false;
-                        System.out.println("🔹 Okno otwarte! Temperatura zaczyna spadać...");
                     }
                     else if (!windowOpen && !heatingUp) {
                         simulatedTemperature = targetTemperature;
@@ -52,7 +51,6 @@ public class TemperatureSensorSimulator implements Simulator {
                         if (windowOpenTime >= 20) {
                             windowOpen = false;
                             heatingUp = true;
-                            System.out.println("🔹 Okno zamknięte! Temperatura zaczyna wracać do normy.");
                         }
 
                     }
@@ -61,11 +59,10 @@ public class TemperatureSensorSimulator implements Simulator {
                         simulatedTemperature += 0.025 + (Math.random() - 0.5)/100;
                         if (simulatedTemperature >= targetTemperature) {
                             heatingUp = false;
-                            System.out.println("🔹 Temperatura wróciła do normy.");
                         }
                     }
 
-                    double simulatedHumidity = (55*baseTemperature)/(6.1078 * Math.pow(10, (7.5 * simulatedTemperature) / (237.3 + simulatedTemperature)));
+                    double simulatedHumidity = (55*baseTemperature)/(6.1078 * Math.pow(10, (7.5 * simulatedTemperature) / (237.3 + simulatedTemperature)))+Math.random();
 
                     TemperatureSensorData data = TemperatureSensorData.builder()
                             .deviceId("sensor-001")
