@@ -50,7 +50,7 @@ public class EnergyMeterSimulator implements Simulator {
                             currentPower = 100.0 + random.nextDouble() * 50;
                             break;
                         case 3:
-                            currentPower = 200.0 + random.nextDouble() * 300;
+                            currentPower = 200.0 + random.nextDouble() * 200;
                             break;
                     }
 

@@ -17,8 +17,10 @@ public class MotionSensorSimulator implements Simulator {
 
     private final KafkaDeviceDataProducerService kafkaProducerService;
     private final Random random = new Random();
-    private double batteryLevel = 100.0;
-    private final double batteryDrainPerEvent = 0.01; // rozładowanie na każde wykrycie ruchu
+    private int burglaryDuration = 0;
+    private final double burglaryChance = 0.0001;
+    private boolean burglaryDetected = false;
+    private int maxburglaryDuration = 0;
 
     public MotionSensorSimulator(KafkaDeviceDataProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
@@ -45,6 +47,15 @@ public class MotionSensorSimulator implements Simulator {
                     }
                     else {
                         lambda = 0.0001;
+                        if (!burglaryDetected && Math.random() < burglaryChance) {
+                            burglaryDetected = true;
+                            burglaryDuration = 0;
+                            maxburglaryDuration = 12*20 + random.nextInt(120);
+                        }
+                        else if (burglaryDetected && burglaryDuration < maxburglaryDuration) {
+                            burglaryDuration++;
+                            lambda = 0.1;
+                        }
                     }
 
                     // Generowanie zdarzenia ruchu zgodnie z rozkładem Poissona

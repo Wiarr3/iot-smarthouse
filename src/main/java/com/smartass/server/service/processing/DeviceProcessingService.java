@@ -13,6 +13,7 @@ public class DeviceProcessingService {
             case "smoke" -> handleSmoke((SmokeDetectorData) data);
             case "energy" -> handleEnergy((EnergyMeterData) data);
             case "motion" -> handleMotion((MotionSensorData) data);
+            case "fridge" -> handleFridge((FridgeTemperatureSensorData) data);
             default -> System.out.println("Unknown device type");
         }
     }
@@ -36,6 +37,11 @@ public class DeviceProcessingService {
 
     private void handleMotion(MotionSensorData data) {
         System.out.println("[Motion] Any Motion: " + (data.getMotionDetected() ? "Yes" : "No"));
+
+    }
+
+    private void handleFridge(FridgeTemperatureSensorData data) {
+        System.out.println("[Fridge] Door: " + (data.getDoorOpen() ? "Open" : "Close") + ", temperature: " + data.getTemperature());
 
     }
 }
