@@ -97,7 +97,7 @@ public class FridgeTemperatureSensorSimulator implements Simulator {
                     // Powrót do temperatury docelowej po zdarzeniach
                     if (cooling) {
                         simulatedTemperature = simulatedTemperature - COOLING_RATE + (random.nextDouble() - 0.5)*0.05;
-                        if (simulatedTemperature < targetTemperature) {
+                        if (simulatedTemperature < targetTemperature + temperatureVariation) {
                             cooling = false;
                         }
                     }
