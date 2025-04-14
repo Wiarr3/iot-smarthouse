@@ -20,7 +20,7 @@ public class ConditionRegistry {
     public ConditionRegistry(AlertConditionValidator alertConditionValidator) {
         this.alertConditionValidator = alertConditionValidator;
         conditions.put("temperature-high", new AlertCondition("temperature", "temperature",
-                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "70",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "15",
                 "Temperature is too high!"));
         conditions.put("temperature-low", new AlertCondition("temperature", "temperature",
                 AlertSeverity.WARNING, ComparisonOperator.LESS_THAN, "17",

@@ -26,10 +26,9 @@ public class AlertReactionService {
 
     public List<AlertDTO> evaluateAndReact(DeviceData data) {
         List<AlertDTO> alertOpt = ruleEngine.evaluateAll(data);
-
         alertOpt.forEach(alert -> {
             meterRegistry.counter("iot.alerts.triggered",
-                    "type", alert.getType().name(),
+                    "desc", alert.getDescription(),
                     "severity", alert.getSeverity().name()
             ).increment();
 

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlertDTO {
     private String deviceId;
-    private AlertType type;
+    //private String type;
     private AlertSeverity severity;
     private Long timestamp;
     private String description;

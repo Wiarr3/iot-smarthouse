@@ -18,7 +18,7 @@ public class DeviceProcessingService {
         }
     }
     private void handleTemperature(TemperatureSensorData data) {
-        System.out.println("[TEMPERATURE] " + data.getTemperature() + "C, humidity: " + data.getHumidity());
+        System.out.println("[TEMPERATURE33] " + data.getTemperature() + "C, humidity: " + data.getHumidity());
 
     }
     private void handleLight(LightBulbData data) {
