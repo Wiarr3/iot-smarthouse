@@ -8,20 +8,22 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.time.Instant;
-
+import java.util.Random;
 
 @Component
 @Profile("simulator")
 public class TemperatureSensorSimulator implements Simulator {
 
     private final KafkaDeviceDataProducerService kafkaProducerService;
+    private final Random random = new Random();
     private double baseTemperature = 21.0;
     private double temperatureDrift = 0.02;
-    private double anomalyChance = 0.01;
+    private double anomalyChance = 0.05;
     private boolean windowOpen = false;
     private int windowOpenTime = 0;
     private boolean heatingUp = false;
     private double simulatedTemperature = baseTemperature;
+    private int MAX_Window_Time = 20;
 
     public TemperatureSensorSimulator(KafkaDeviceDataProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
@@ -40,6 +42,7 @@ public class TemperatureSensorSimulator implements Simulator {
                     if (!windowOpen && !heatingUp && Math.random() < anomalyChance) {
                         windowOpen = true;
                         windowOpenTime = 0;
+                        MAX_Window_Time = 20 + random.nextInt(60);
                         heatingUp = false;
                     }
                     else if (!windowOpen && !heatingUp) {
@@ -48,7 +51,7 @@ public class TemperatureSensorSimulator implements Simulator {
                     else if (windowOpen) {
                         simulatedTemperature -= 0.05 + (Math.random() - 0.5)/100;
                         windowOpenTime++;
-                        if (windowOpenTime >= 20) {
+                        if (windowOpenTime >= MAX_Window_Time){
                             windowOpen = false;
                             heatingUp = true;
                         }

@@ -19,7 +19,7 @@ public class FridgeTemperatureSensorSimulator implements Simulator {
 
     private final double targetTemperature = 6.0;
     private final double temperatureDrift = 0.001;
-    private final double doorOpenChance = 0.005;
+    private final double doorOpenChance = 0.01;
     private final double powerOutageChance = 0.00005;
 
     private boolean doorOpen = false;

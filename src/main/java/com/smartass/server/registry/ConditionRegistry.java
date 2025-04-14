@@ -19,12 +19,24 @@ public class ConditionRegistry {
 
     public ConditionRegistry(AlertConditionValidator alertConditionValidator) {
         this.alertConditionValidator = alertConditionValidator;
-        conditions.put("temperature", new AlertCondition("temperature", "temperature",
+        conditions.put("temperature-high", new AlertCondition("temperature", "temperature",
                 AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "70",
                 "Temperature is too high!"));
+        conditions.put("temperature-low", new AlertCondition("temperature", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.LESS_THAN, "17",
+                "Temperature is too low!"));
         conditions.put("light", new AlertCondition("light", "state", AlertSeverity.CRITICAL,
                 ComparisonOperator.EQUALS, "ON",
                 "Light switch should be on!"));
+        conditions.put("energy-high", new AlertCondition("energy", "currentPower",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "300",
+                "Temperature is too low!"));
+        conditions.put("fridge-temperature-high", new AlertCondition("fridge", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "12",
+                "Temperature in fridge is too high!"));
+        conditions.put("smoke", new AlertCondition("smoke", "alarmActive", AlertSeverity.CRITICAL,
+                ComparisonOperator.EQUALS, "ON",
+                "The sensor has detected smoke!"));
     }
 
     public AlertCondition getCondition(String parameter) {
