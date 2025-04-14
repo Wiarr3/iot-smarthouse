@@ -40,7 +40,6 @@ public class AlertRuleEngine {
     }
 
     private boolean evaluateSingleCondition(AlertCondition condition, DeviceData data) {
-        System.out.println("I try to evaluate condition: " + condition);
         try {
             Field field = data.getClass().getDeclaredField(condition.getParameter());
             field.setAccessible(true);
