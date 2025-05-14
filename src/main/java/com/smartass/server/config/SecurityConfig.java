@@ -12,7 +12,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/actuator/prometheus", "/ws/**").permitAll()
+                        .pathMatchers("/actuator/prometheus", "/ws/**", "/alert/condition/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
