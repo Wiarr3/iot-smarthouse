@@ -34,7 +34,6 @@ public class MotionSensorSimulator implements Simulator {
                     LocalTime now = LocalTime.now();
                     boolean motionDetected = false;
 
-                    // Określenie intensywności λ w zależności od pory dnia
                     double lambda;
                     if (now.isAfter(LocalTime.of(6, 0)) && now.isBefore(LocalTime.of(7, 0))) {
                         lambda = 0.09;
@@ -58,13 +57,11 @@ public class MotionSensorSimulator implements Simulator {
                         }
                     }
 
-                    // Generowanie zdarzenia ruchu zgodnie z rozkładem Poissona
                     double p = random.nextDouble();
                     if (p < lambda) {
                         motionDetected = true;
                     }
 
-                    // Przygotowanie danych
                     MotionSensorData data = MotionSensorData.builder()
                             .deviceId("motion-001")
                             .type("motion")

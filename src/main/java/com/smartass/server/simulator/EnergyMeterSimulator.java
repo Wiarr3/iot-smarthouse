@@ -54,15 +54,15 @@ public class EnergyMeterSimulator implements Simulator {
                             break;
                     }
 
-                    totalEnergy += (currentPower / 1000) * (5.0 / 3600); // kWh = (W / 1000) * (czas w godzinach)
+                    totalEnergy += (currentPower / 1000) * (5.0 / 3600);
 
 
                     EnergyMeterData data = EnergyMeterData.builder()
                             .deviceId("energy-001")
                             .type("energy")
                             .timestamp(timestamp)
-                            .currentPower(currentPower) // aktualna moc (W)
-                            .totalEnergy(totalEnergy) // całkowita energia (kWh)
+                            .currentPower(currentPower)
+                            .totalEnergy(totalEnergy)
                             .authKey("key412")
                             .build();
 

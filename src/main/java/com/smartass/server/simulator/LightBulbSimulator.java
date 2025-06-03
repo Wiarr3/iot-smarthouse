@@ -8,15 +8,16 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @Profile("simulator")
 public class LightBulbSimulator implements Simulator {
 
     private final KafkaDeviceDataProducerService kafkaProducerService;
-    private boolean isOn = false;  // Czy żarówka jest włączona?
-    private int brightness = 0;    // Jasność 0-100
-    private int activeTime = 0;    // Jak długo światło było włączone
+    private boolean isOn = false;
+    private int activeTime = 0;
+
 
     public LightBulbSimulator(KafkaDeviceDataProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
@@ -27,33 +28,40 @@ public class LightBulbSimulator implements Simulator {
         Flux.interval(Duration.ofSeconds(10))
                 .flatMap(tick -> {
                     long timestamp = Instant.now().toEpochMilli();
-                    int hour = (int) ((timestamp / (1000 * 60 * 60)) % 24);  // Aktualna godzina (0-23)
+                    int hour = (int) ((timestamp / (1000 * 60 * 60)) % 24);
+                    boolean isNighttime = (hour >= 18 || hour < 6);
+                    double turnOnProbability = getTurnOnProbability(hour);
 
-                    // Wpływ pory dnia
-                    boolean shouldBeOn = (hour >= 18 || hour < 2);  // Światło głównie wieczorem i w nocy
-
-                    // Decyzja o zmianie stanu
-                    if (!isOn && shouldBeOn && Math.random() < 0.7) {
-                        isOn = true;
-                        brightness = 50 + (int) (Math.random() * 50);  // Jasność 50-100%
-                        activeTime = 0;
-                    } else if (isOn) {
+                    if (!isOn) {
+                        if (ThreadLocalRandom.current().nextDouble() < turnOnProbability) {
+                            isOn = true;
+                            activeTime = 0;
+                        }
+                    } else {
                         activeTime++;
 
-                        // Stopniowe zmiany jasności
-                        if (Math.random() < 0.3) {
-                            brightness += (Math.random() > 0.5) ? 5 : -5;
-                            brightness = Math.max(10, Math.min(100, brightness));  // Ograniczenie do 10-100%
-                        }
+                        boolean shouldTurnOff =
+                                activeTime > (isNighttime ? 50 : 30) ||
+                                        (!isNighttime && ThreadLocalRandom.current().nextDouble() < 0.4);
 
-                        // Wyłączanie po dłuższym czasie
-                        if (Math.random() < 0.2 || activeTime > 30) {
+                        if (shouldTurnOff) {
                             isOn = false;
-                            brightness = 0;
+                            activeTime = 0;
                         }
                     }
 
-                    // Tworzenie danych
+                    int brightness = 0;
+
+                    if (isOn) {
+
+                        brightness = 90 + ThreadLocalRandom.current().nextInt(11);
+                        brightness = Math.min(100, brightness);
+
+                        if (ThreadLocalRandom.current().nextDouble() < 0.01) {
+                            brightness = ThreadLocalRandom.current().nextInt(20, 50);
+                        }
+                    }
+
                     LightBulbData data = LightBulbData.builder()
                             .deviceId("light-001")
                             .type("light")
@@ -67,5 +75,11 @@ public class LightBulbSimulator implements Simulator {
                 })
                 .subscribe();
     }
-}
 
+    private double getTurnOnProbability(int hour) {
+        if (hour >= 18 || hour < 6) return 0.7;
+        if (hour >= 12 && hour < 14) return 0.3;
+        if (hour >= 8 && hour < 10) return 0.2;
+        return 0.1;
+    }
+}
