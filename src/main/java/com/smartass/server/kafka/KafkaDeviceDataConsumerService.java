@@ -44,6 +44,7 @@ public class KafkaDeviceDataConsumerService {
     }
 
     private void startReceiving() {
+        System.out.println("startReceiving");
         kafkaReceiver.receive()
                 .doOnNext(this::processRecord)
                 .subscribe();

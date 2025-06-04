@@ -47,6 +47,8 @@ public class ConditionRegistry {
         if (alertConditionValidator.validate(condition)) {
             String conditionID = condition.getDeviceType() + "-" + condition.getParameter();
             conditions.put(conditionID, condition);
+        } else {
+            throw new IllegalArgumentException("Invalid condition: " + condition);
         }
     }
 

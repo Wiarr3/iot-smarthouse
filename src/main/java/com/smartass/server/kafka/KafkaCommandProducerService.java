@@ -28,7 +28,6 @@ public class KafkaCommandProducerService {
         Timer.Sample sample = Timer.start(meterRegistry);
         Flux<SenderResult<String>> resultFlux = kafkaSender.send(Mono.just(record));
 
-
         return resultFlux
                 .doOnNext(result -> {
                     meterRegistry.counter("iot.command.sent", "command", command.getCommand(), "deviceId", command.getDeviceId()).increment();

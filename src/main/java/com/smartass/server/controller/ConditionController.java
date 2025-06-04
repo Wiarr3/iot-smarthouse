@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/alert/condition")
@@ -31,8 +32,13 @@ public class ConditionController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertCondition> createCondition(@RequestBody AlertCondition condition) {
-        conditionRegistry.setCondition(condition);
+    public ResponseEntity<?> createCondition(@RequestBody AlertCondition condition) {
+        try {
+            conditionRegistry.setCondition(condition);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
         return ResponseEntity.ok(condition);
     }
 }
