@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
