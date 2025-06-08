@@ -30,8 +30,17 @@ public class KafkaDeviceDataProducerService {
     }
 
     public Mono<Void> send(DeviceData data) {
+        String topic = switch (data.getType()) {
+            case "light" -> "light-bulb";
+            case "fridge" -> "fridge-temperature";
+            case "motion" -> "motion-sensor";
+            case "smoke" -> "smoke-detector";
+            case "temperature" -> "temperature-sensor";
+            default -> "device-data"; // fallback
+        };
+
         SenderRecord<String, DeviceData, String> record =
-                SenderRecord.create(new ProducerRecord<>("device-data", data.getDeviceId(), data), data.getDeviceId());
+                SenderRecord.create(new ProducerRecord<>(topic, data.getDeviceId(), data), data.getDeviceId());
 
         Timer.Sample sample = Timer.start(meterRegistry);
         Flux<SenderResult<String>> resultFlux = kafkaSender.send(Mono.just(record));
