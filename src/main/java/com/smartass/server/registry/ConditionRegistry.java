@@ -8,8 +8,11 @@ import com.smartass.server.service.alert.AlertConditionValidator;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
 
 @Component
 public class ConditionRegistry {
@@ -37,6 +40,10 @@ public class ConditionRegistry {
         conditions.put("smoke", new AlertCondition("smoke", "alarmActive", AlertSeverity.CRITICAL,
                 ComparisonOperator.EQUALS, "ON",
                 "The sensor has detected smoke!"));
+        conditions.put("fridge-temperature-low", new AlertCondition("fridge", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "1",
+                "Temperature in fridge is too low!"));
+
     }
 
     public AlertCondition getCondition(String parameter) {
@@ -50,6 +57,17 @@ public class ConditionRegistry {
         } else {
             throw new IllegalArgumentException("Invalid condition: " + condition);
         }
+    }
+
+    public void deleteCondition(String parameter) {
+        conditions.remove(parameter);
+    }
+
+    public List<AlertCondition> getConditionsByDeviceType(String deviceType) {
+        return conditions.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(deviceType))
+                .map(Map.Entry::getValue)
+                .toList();
     }
 
     public Map<String, AlertCondition> getAllConditions() {

@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/alert/condition")
 public class ConditionController {
-    ConditionRegistry conditionRegistry;
+    private final ConditionRegistry conditionRegistry;
 
     public ConditionController(ConditionRegistry conditionRegistry) {
         this.conditionRegistry = conditionRegistry;
@@ -21,10 +21,15 @@ public class ConditionController {
     public ResponseEntity<List<AlertCondition>> getAllConditions() {
         return ResponseEntity.ok(conditionRegistry.getAllConditions().values().stream().toList());
     }
+    @GetMapping("/{deviceType}")
+    public ResponseEntity<List<AlertCondition>> getConditionByType(@PathVariable String deviceType) {
+        return ResponseEntity.ok(conditionRegistry.getConditionsByDeviceType(deviceType));
+    }
 
-    @GetMapping("/{deviceName}/{paramName}")
-    public ResponseEntity<AlertCondition> getCondition(@PathVariable String deviceName, @PathVariable String paramName) {
-        AlertCondition condition = conditionRegistry.getCondition(deviceName + "-" + paramName);
+    @GetMapping("/{deviceType}/{paramName}")
+    public ResponseEntity<AlertCondition> getCondition(@PathVariable String deviceType, @PathVariable String paramName) {
+        String key = deviceType + "-" + paramName;
+        AlertCondition condition = conditionRegistry.getCondition(key);
         if (condition == null) {
             return ResponseEntity.notFound().build();
         }
@@ -35,10 +40,36 @@ public class ConditionController {
     public ResponseEntity<?> createCondition(@RequestBody AlertCondition condition) {
         try {
             conditionRegistry.setCondition(condition);
+            return ResponseEntity.ok(condition);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
 
-        return ResponseEntity.ok(condition);
+    @PutMapping("/{deviceType}/{paramName}")
+    public ResponseEntity<?> updateCondition(@PathVariable String deviceType,
+                                             @PathVariable String paramName,
+                                             @RequestBody AlertCondition updatedCondition) {
+        String key = deviceType + "-" + paramName;
+        if (conditionRegistry.getCondition(key) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            conditionRegistry.setCondition(updatedCondition);
+            return ResponseEntity.ok(updatedCondition);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{deviceType}/{paramName}")
+    public ResponseEntity<?> deleteCondition(@PathVariable String deviceType, @PathVariable String paramName) {
+        String key = deviceType + "-" + paramName;
+        AlertCondition existing = conditionRegistry.getCondition(key);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        conditionRegistry.deleteCondition(key);
+        return ResponseEntity.noContent().build();
     }
 }
