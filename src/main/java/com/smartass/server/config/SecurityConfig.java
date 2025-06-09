@@ -29,8 +29,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(
                                 "/actuator/prometheus",
-                                "/ws/**",
-                                "/alert/condition/**"
+                                "/ws/**"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )
