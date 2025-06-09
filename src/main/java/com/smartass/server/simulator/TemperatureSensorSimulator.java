@@ -1,24 +1,30 @@
 package com.smartass.server.simulator;
 
-
 import com.smartass.server.kafka.KafkaDeviceDataProducerService;
-import com.smartass.server.model.device.DeviceData;
 import com.smartass.server.model.device.TemperatureSensorData;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.kafka.sender.KafkaSender;
-import reactor.kafka.sender.SenderRecord;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Random;
 
 @Component
 @Profile("simulator")
 public class TemperatureSensorSimulator implements Simulator {
 
     private final KafkaDeviceDataProducerService kafkaProducerService;
+    private final Random random = new Random();
+    private double baseTemperature = 21.0;
+    private double temperatureDrift = 0.02;
+    private double anomalyChance = 0.05;
+    private boolean windowOpen = false;
+    private int windowOpenTime = 0;
+    private boolean heatingUp = false;
+    private double simulatedTemperature = baseTemperature;
+    private int MAX_Window_Time = 20;
+
     public TemperatureSensorSimulator(KafkaDeviceDataProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
     }
@@ -27,12 +33,46 @@ public class TemperatureSensorSimulator implements Simulator {
     public void simulate() {
         Flux.interval(Duration.ofSeconds(15))
                 .flatMap(tick -> {
+                    long timestamp = Instant.now().toEpochMilli();
+
+                    double hourFactor = (timestamp / (1000.0 * 60 * 60)) % 24;
+                    double temperatureVariation = Math.sin(hourFactor / 24 * Math.PI * 2-Math.PI/2) * 2;
+                    double targetTemperature = baseTemperature + (Math.random() - 0.5) * temperatureDrift + temperatureVariation;
+
+                    if (!windowOpen && !heatingUp && Math.random() < anomalyChance) {
+                        windowOpen = true;
+                        windowOpenTime = 0;
+                        MAX_Window_Time = 20 + random.nextInt(60);
+                        heatingUp = false;
+                    }
+                    else if (!windowOpen && !heatingUp) {
+                        simulatedTemperature = targetTemperature;
+                    }
+                    else if (windowOpen) {
+                        simulatedTemperature -= 0.05 + (Math.random() - 0.5)/100;
+                        windowOpenTime++;
+                        if (windowOpenTime >= MAX_Window_Time){
+                            windowOpen = false;
+                            heatingUp = true;
+                        }
+
+                    }
+
+                    else if (heatingUp) {
+                        simulatedTemperature += 0.025 + (Math.random() - 0.5)/100;
+                        if (simulatedTemperature >= targetTemperature) {
+                            heatingUp = false;
+                        }
+                    }
+
+                    double simulatedHumidity = (55*baseTemperature)/(6.1078 * Math.pow(10, (7.5 * simulatedTemperature) / (237.3 + simulatedTemperature)))+Math.random();
+
                     TemperatureSensorData data = TemperatureSensorData.builder()
                             .deviceId("sensor-001")
                             .type("temperature")
-                            .timestamp(System.currentTimeMillis())
-                            .temperature(20 + Math.random() * 10)
-                            .humidity(30 + Math.random() * 20)
+                            .timestamp(timestamp)
+                            .temperature(simulatedTemperature)
+                            .humidity(simulatedHumidity)
                             .authKey("key123")
                             .build();
 

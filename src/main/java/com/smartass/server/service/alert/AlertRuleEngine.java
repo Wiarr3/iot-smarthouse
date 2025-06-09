@@ -26,14 +26,12 @@ public class AlertRuleEngine {
 
     public List<AlertDTO> evaluateAll(DeviceData data) {
         String deviceType = data.getType();
-
         return conditionRegistry.getAllConditions().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(deviceType + "-"))
+                .filter(entry -> entry.getKey().startsWith(deviceType))
                 .map(Map.Entry::getValue)
                 .filter(condition -> evaluateSingleCondition(condition, data))
                 .map(condition -> new AlertDTO(
                         data.getDeviceId(),
-                        AlertType.valueOf(condition.getParameter().toUpperCase()),
                         condition.getSeverity(),
                         System.currentTimeMillis(),
                         condition.getDescription()
@@ -46,7 +44,6 @@ public class AlertRuleEngine {
             Field field = data.getClass().getDeclaredField(condition.getParameter());
             field.setAccessible(true);
             Object actualValue = field.get(data);
-
             return compareValues(actualValue, condition.getValue(), condition.getOperator());
 
         } catch (NoSuchFieldException | IllegalAccessException e) {

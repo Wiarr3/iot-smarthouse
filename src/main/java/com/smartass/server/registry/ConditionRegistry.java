@@ -8,8 +8,11 @@ import com.smartass.server.service.alert.AlertConditionValidator;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
 
 @Component
 public class ConditionRegistry {
@@ -19,12 +22,28 @@ public class ConditionRegistry {
 
     public ConditionRegistry(AlertConditionValidator alertConditionValidator) {
         this.alertConditionValidator = alertConditionValidator;
-        conditions.put("temperature", new AlertCondition("temperature", "temperature",
-                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "70",
+        conditions.put("temperature-high", new AlertCondition("temperature", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "15",
                 "Temperature is too high!"));
+        conditions.put("temperature-low", new AlertCondition("temperature", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.LESS_THAN, "17",
+                "Temperature is too low!"));
         conditions.put("light", new AlertCondition("light", "state", AlertSeverity.CRITICAL,
                 ComparisonOperator.EQUALS, "ON",
                 "Light switch should be on!"));
+        conditions.put("energy-high", new AlertCondition("energy", "currentPower",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "300",
+                "Temperature is too low!"));
+        conditions.put("fridge-temperature-high", new AlertCondition("fridge", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "12",
+                "Temperature in fridge is too high!"));
+        conditions.put("smoke", new AlertCondition("smoke", "alarmActive", AlertSeverity.CRITICAL,
+                ComparisonOperator.EQUALS, "ON",
+                "The sensor has detected smoke!"));
+        conditions.put("fridge-temperature-low", new AlertCondition("fridge", "temperature",
+                AlertSeverity.WARNING, ComparisonOperator.GREATER_THAN, "1",
+                "Temperature in fridge is too low!"));
+
     }
 
     public AlertCondition getCondition(String parameter) {
@@ -35,7 +54,20 @@ public class ConditionRegistry {
         if (alertConditionValidator.validate(condition)) {
             String conditionID = condition.getDeviceType() + "-" + condition.getParameter();
             conditions.put(conditionID, condition);
+        } else {
+            throw new IllegalArgumentException("Invalid condition: " + condition);
         }
+    }
+
+    public void deleteCondition(String parameter) {
+        conditions.remove(parameter);
+    }
+
+    public List<AlertCondition> getConditionsByDeviceType(String deviceType) {
+        return conditions.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(deviceType))
+                .map(Map.Entry::getValue)
+                .toList();
     }
 
     public Map<String, AlertCondition> getAllConditions() {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🔥 [0/4] REMOVING OLD NAMED CONTAINERS (if exist)..."
-docker rm -f zookeeper kafka kafka-ui iot-server 2>/dev/null || true
+docker rm -f zookeeper kafka kafka-ui iot-server prometheus grafana node-exporter 2>/dev/null || true
 
 echo "🔄 [1/4] CLEANING AND BUILDING BACKEND SERVER..."
 cd ../ || exit 1

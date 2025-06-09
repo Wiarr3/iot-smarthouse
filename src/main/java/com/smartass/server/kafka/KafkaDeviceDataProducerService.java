@@ -30,7 +30,6 @@ public class KafkaDeviceDataProducerService {
     }
 
     public Mono<Void> send(DeviceData data) {
-        System.out.println("send try");
         SenderRecord<String, DeviceData, String> record =
                 SenderRecord.create(new ProducerRecord<>("device-data", data.getDeviceId(), data), data.getDeviceId());
 
