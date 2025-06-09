@@ -8,22 +8,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/test/energy")
-public class EnergyMeterTestController {
+@RequestMapping("/api/energy-meter")
+@RequiredArgsConstructor
+public class EnergyMeterDataController {
 
     private final EnergyMeterDataRepository repository;
 
-    public EnergyMeterTestController(EnergyMeterDataRepository repository) {
-        this.repository = repository;
-    }
-
-    @PostMapping("/add")
-    public EnergyMeterDataEntity addSample(@RequestBody EnergyMeterDataEntity data) {
-        return repository.save(data);
-    }
-
-    @GetMapping("/all")
+    @GetMapping
     public List<EnergyMeterDataEntity> getAll() {
         return repository.findAll();
+    }
+
+    @PostMapping
+    public EnergyMeterDataEntity post(@RequestBody EnergyMeterDataEntity entity) {
+        return repository.save(entity);
     }
 }
