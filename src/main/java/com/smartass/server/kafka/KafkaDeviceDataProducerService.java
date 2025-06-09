@@ -30,14 +30,7 @@ public class KafkaDeviceDataProducerService {
     }
 
     public Mono<Void> send(DeviceData data) {
-        String topic = switch (data.getType()) {
-            case "light" -> "light-bulb";
-            case "fridge" -> "fridge-temperature";
-            case "motion" -> "motion-sensor";
-            case "smoke" -> "smoke-detector";
-            case "temperature" -> "temperature-sensor";
-            default -> "device-data"; // fallback
-        };
+        String topic = "device-data";
 
         SenderRecord<String, DeviceData, String> record =
                 SenderRecord.create(new ProducerRecord<>(topic, data.getDeviceId(), data), data.getDeviceId());
@@ -52,7 +45,7 @@ public class KafkaDeviceDataProducerService {
                             .description("Time of sending telemetry data from a device")
                             .tag("type", data.getType())
                             .register(meterRegistry));
-                    System.out.println("Telemetry sent from device: " + data.getDeviceId());
+                    System.out.println("Telemetry sent from device: " + data.getDeviceId() + " to topic: " + topic);
                 })
                 .doOnError(error -> {
                     meterRegistry.counter("iot.telemetry.error", "type", data.getType()).increment();

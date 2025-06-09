@@ -2,8 +2,6 @@ package com.smartass.server.simulator;
 
 import com.smartass.server.kafka.KafkaDeviceDataProducerService;
 import com.smartass.server.model.device.EnergyMeterData;
-import com.smartass.server.model.entity.EnergyMeterDataEntity;
-import com.smartass.server.repository.EnergyMeterDataRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -17,16 +15,14 @@ import java.util.Random;
 public class EnergyMeterSimulator implements Simulator {
 
     private final KafkaDeviceDataProducerService kafkaProducerService;
-    private final EnergyMeterDataRepository repository;
     private final Random random = new Random();
     private double currentPower;
     private double totalEnergy;
     private int currentState;
     private int stateDuration = 0;
 
-    public EnergyMeterSimulator(KafkaDeviceDataProducerService kafkaProducerService, EnergyMeterDataRepository repository) {
+    public EnergyMeterSimulator(KafkaDeviceDataProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
-        this.repository = repository;
         this.currentPower = 20.0 + random.nextDouble() * 10;
         this.totalEnergy = 0.0;
     }
@@ -44,22 +40,13 @@ public class EnergyMeterSimulator implements Simulator {
                     }
 
                     switch (currentState) {
-                        case 0:
-                            currentPower = 3.0 + random.nextDouble() * 2;
-                            break;
-                        case 1:
-                            currentPower = 50.0 + random.nextDouble() * 50;
-                            break;
-                        case 2:
-                            currentPower = 100.0 + random.nextDouble() * 50;
-                            break;
-                        case 3:
-                            currentPower = 200.0 + random.nextDouble() * 200;
-                            break;
+                        case 0 -> currentPower = 3.0 + random.nextDouble() * 2;
+                        case 1 -> currentPower = 50.0 + random.nextDouble() * 50;
+                        case 2 -> currentPower = 100.0 + random.nextDouble() * 50;
+                        case 3 -> currentPower = 200.0 + random.nextDouble() * 200;
                     }
 
                     totalEnergy += (currentPower / 1000) * (5.0 / 3600);
-
 
                     EnergyMeterData data = EnergyMeterData.builder()
                             .deviceId("energy-001")
@@ -70,17 +57,7 @@ public class EnergyMeterSimulator implements Simulator {
                             .authKey("key412")
                             .build();
 
-                    EnergyMeterDataEntity entity = EnergyMeterDataEntity.builder()
-                            .deviceId(data.getDeviceId())
-                            .type(data.getType())
-                            .timestamp(data.getTimestamp())
-                            .currentPower(data.getCurrentPower())
-                            .totalEnergy(data.getTotalEnergy())
-                            .authKey(data.getAuthKey())
-                            .build();
-                    repository.save(entity);
-
-                    return kafkaProducerService.send(data);
+                    return kafkaProducerService.send(data); 
                 })
                 .subscribe();
     }
