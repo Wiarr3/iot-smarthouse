@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/alert/condition")
+@RequestMapping("/api/conditions")
 public class ConditionController {
     ConditionRegistry conditionRegistry;
 
