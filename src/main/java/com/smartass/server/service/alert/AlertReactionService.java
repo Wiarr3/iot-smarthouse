@@ -49,15 +49,19 @@ public class AlertReactionService {
         try {
             double value = Double.parseDouble(data.getValueFor(condition.getParameter()));
             double threshold = Double.parseDouble(condition.getValue());
-
-            return switch (condition.getOperator()) {
+            boolean result = switch (condition.getOperator()) {
                 case GREATER_THAN -> value > threshold;
                 case LESS_THAN -> value < threshold;
                 case EQUALS -> value == threshold;
                 default -> false; // Covers all unexpected cases
             };
-
+            System.out.printf(
+                    "[AlertReactionService] Evaluating %s %s %s → %s%n",
+                    value, condition.getOperator(), threshold, result
+            );
+            return result;
         } catch (Exception e) {
+            System.out.println("[AlertReactionService] Failed to evaluate condition: " + e.getMessage());
             return false;
         }
     }
