@@ -41,7 +41,7 @@ public class AlertReactionService {
                 triggered.add(alert);
             }
         }
-
+        System.out.println("[AlertReactionService] Triggered alerts: " + triggered.size());
         return triggered;
     }
 
