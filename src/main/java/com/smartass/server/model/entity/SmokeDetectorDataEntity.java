@@ -18,4 +18,6 @@ public class SmokeDetectorDataEntity {
     private Boolean alarmActive;
     private Double batteryLevel;
     private String authKey;
+
+
 }

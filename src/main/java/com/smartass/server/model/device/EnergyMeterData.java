@@ -1,9 +1,6 @@
 package com.smartass.server.model.device;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -17,4 +14,12 @@ public class EnergyMeterData implements DeviceData {
     private Double currentPower;
     private Double totalEnergy;
 
+    @Override
+    public String getValueFor(String parameter) {
+        return switch (parameter) {
+            case "currentPower" -> String.valueOf(this.currentPower);
+            case "totalEnergy" -> String.valueOf(this.totalEnergy);
+            default -> throw new IllegalArgumentException("Unknown parameter: " + parameter);
+        };
+    }
 }

@@ -1,9 +1,6 @@
 package com.smartass.server.model.device;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -17,4 +14,12 @@ public class TemperatureSensorData implements DeviceData {
     private Double temperature;
     private Double humidity;
 
+    @Override
+    public String getValueFor(String parameter) {
+        return switch (parameter) {
+            case "temperature" -> String.valueOf(this.temperature);
+            case "humidity" -> String.valueOf(this.humidity);
+            default -> throw new IllegalArgumentException("Unknown parameter: " + parameter);
+        };
+    }
 }

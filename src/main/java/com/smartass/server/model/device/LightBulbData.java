@@ -1,9 +1,6 @@
 package com.smartass.server.model.device;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -16,4 +13,13 @@ public class LightBulbData implements DeviceData {
     private Long timestamp;
     private Boolean state;
     private Integer brightness;
+
+    @Override
+    public String getValueFor(String parameter) {
+        return switch (parameter) {
+            case "state" -> String.valueOf(this.state);
+            case "brightness" -> String.valueOf(this.brightness);
+            default -> throw new IllegalArgumentException("Unknown parameter: " + parameter);
+        };
+    }
 }

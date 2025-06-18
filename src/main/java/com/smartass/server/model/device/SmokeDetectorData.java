@@ -1,9 +1,6 @@
 package com.smartass.server.model.device;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -17,4 +14,14 @@ public class SmokeDetectorData implements DeviceData {
     private Double smokeLevel;
     private Boolean alarmActive;
     private Double batteryLevel;
+
+    @Override
+    public String getValueFor(String parameter) {
+        return switch (parameter) {
+            case "smokeLevel" -> String.valueOf(this.smokeLevel);
+            case "alarmActive" -> String.valueOf(this.alarmActive);
+            case "batteryLevel" -> String.valueOf(this.batteryLevel);
+            default -> throw new IllegalArgumentException("Unknown parameter: " + parameter);
+        };
+    }
 }

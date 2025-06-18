@@ -9,6 +9,7 @@ mvn clean package -DskipTests
 
 if [ $? -ne 0 ]; then
   echo "❌ Error during building process."
+  read -p "Press Enter to exit..."
   exit 1
 fi
 

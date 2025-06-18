@@ -17,4 +17,6 @@ public class LightBulbDataEntity {
     private Boolean state;
     private Integer brightness;
     private String authKey;
+
+
 }

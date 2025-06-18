@@ -5,4 +5,5 @@ public interface DeviceData {
     String getType();
     Long getTimestamp();
     String getAuthKey();
+    String getValueFor(String parameter);
 }

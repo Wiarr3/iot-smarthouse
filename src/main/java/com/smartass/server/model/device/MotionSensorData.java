@@ -1,9 +1,6 @@
 package com.smartass.server.model.device;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -16,4 +13,11 @@ public class MotionSensorData implements DeviceData {
     private Long timestamp;
     private Boolean motionDetected;
 
+    @Override
+    public String getValueFor(String parameter) {
+        return switch (parameter) {
+            case "motionDetected" -> String.valueOf(this.motionDetected);
+            default -> throw new IllegalArgumentException("Unknown parameter: " + parameter);
+        };
+    }
 }

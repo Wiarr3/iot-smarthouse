@@ -16,4 +16,6 @@ public class MotionSensorDataEntity {
     private Long timestamp;
     private Boolean motionDetected;
     private String authKey;
+
+
 }
